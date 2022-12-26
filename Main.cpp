@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
+#include <stdlib.h>
+#include <time.h>
+
 using namespace sf;
 
 int main(void) {
@@ -8,21 +11,24 @@ int main(void) {
 	RenderWindow window(VideoMode(640, 480), "AfterSchool"); 
 	window.setFramerateLimit(60);
 
+	srand(time(0));
+
+	//player
 	RectangleShape player;
 	player.setSize(Vector2f(40, 40));
 	player.setPosition(100, 100);
 	player.setFillColor(Color::Red);
 	int player_speed = 5;
 
+	//enemy
 	RectangleShape enemy[5];
 	int enemy_life[5];
-
 	for (int i = 0; i < 5; i++)
 	{
 		enemy[i].setSize(Vector2f(70, 70));
 		enemy[i].setFillColor(Color::Yellow);
 		enemy_life[i] = 1;
-		enemy[i].setPosition(500, 100 * i);
+		enemy[i].setPosition(rand()%640, rand() % 480);
 	}
 
 	// 윈도우가 열려 있을 때 까지 반복
@@ -39,6 +45,7 @@ int main(void) {
 			
 		}
 
+		//player 움직이기
 		if (Keyboard::isKeyPressed(Keyboard::Left)) 
 		{
 			player.move(-player_speed, 0);
