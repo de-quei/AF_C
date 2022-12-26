@@ -13,6 +13,11 @@ int main(void) {
 	player.setFillColor(Color::Red);
 	int player_speed = 5;
 
+	RectangleShape enemy;
+	enemy.setSize(Vector2f(70, 70));
+	enemy.setPosition(500, 300);
+	enemy.setFillColor(Color::Yellow);
+
 	while (window.isOpen()) // 윈도우가 열려 있을 때 까지 반복
 	{ 
 		Event event;
@@ -44,7 +49,10 @@ int main(void) {
 		}
 
 		window.clear(Color::Black);
+
+		window.draw(enemy);
 		window.draw(player);
+
 		window.display();
 	}
 	return 0;
