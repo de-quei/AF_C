@@ -23,6 +23,7 @@ int main(void) {
 	//enemy
 	RectangleShape enemy[5];
 	int enemy_life[5];
+	//enemy 초기화
 	for (int i = 0; i < 5; i++)
 	{
 		enemy[i].setSize(Vector2f(70, 70));
@@ -45,7 +46,7 @@ int main(void) {
 			
 		}
 
-		//player 움직이기
+		//player 방향키 start
 		if (Keyboard::isKeyPressed(Keyboard::Left)) 
 		{
 			player.move(-player_speed, 0);
@@ -61,6 +62,18 @@ int main(void) {
 		if (Keyboard::isKeyPressed(Keyboard::Down))
 		{
 			player.move(0, player_speed);
+		} //방향키 end
+
+		//space 누르면 enemy 재출현
+		if (Keyboard::isKeyPressed(Keyboard::Space))
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				enemy[i].setSize(Vector2f(70, 70));
+				enemy[i].setFillColor(Color::Yellow);
+				enemy_life[i] = 1;
+				enemy[i].setPosition(rand() % 300 + 300, rand() % 480);
+			}
 		}
 
 		//enemy와의 충돌
