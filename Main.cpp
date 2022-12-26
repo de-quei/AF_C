@@ -48,8 +48,14 @@ int main(void) {
 			player.move(0, player_speed);
 		}
 
+		if (player.getGlobalBounds().intersects(enemy.getGlobalBounds()))
+		{
+			printf("enemy와 충돌\n");
+		}
+
 		window.clear(Color::Black);
 
+		//draw는 나중에 호출할수록 우선순위가 높아짐
 		window.draw(enemy);
 		window.draw(player);
 
