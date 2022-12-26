@@ -4,7 +4,8 @@ using namespace sf;
 
 int main(void) {
 	
-	RenderWindow window(VideoMode(640, 480), "AfterSchool"); // 윈도우 창 생성
+	// 윈도우 창 생성
+	RenderWindow window(VideoMode(640, 480), "AfterSchool"); 
 	window.setFramerateLimit(60);
 
 	RectangleShape player;
@@ -12,13 +13,15 @@ int main(void) {
 	player.setPosition(100, 100);
 	player.setFillColor(Color::Red);
 	int player_speed = 5;
+	int enemy_life = 1;
 
 	RectangleShape enemy;
 	enemy.setSize(Vector2f(70, 70));
 	enemy.setPosition(500, 300);
 	enemy.setFillColor(Color::Yellow);
 
-	while (window.isOpen()) // 윈도우가 열려 있을 때 까지 반복
+	// 윈도우가 열려 있을 때 까지 반복
+	while (window.isOpen()) 
 	{ 
 		Event event;
 		while (window.pollEvent(event)) 
@@ -48,17 +51,24 @@ int main(void) {
 			player.move(0, player_speed);
 		}
 
-		if (player.getGlobalBounds().intersects(enemy.getGlobalBounds()))
+		//enemy와의 충돌
+		if (enemy_life > 0)
 		{
-			printf("enemy와 충돌\n");
+			if (player.getGlobalBounds().intersects(enemy.getGlobalBounds()))
+			{
+				printf("enemy와 충돌\n");
+				enemy_life -= 1;
+			}
 		}
 
 		window.clear(Color::Black);
 
-		//draw는 나중에 호출할수록 우선순위가 높아짐
-		window.draw(enemy);
-		window.draw(player);
+		if (enemy_life > 0)
+		{
+			window.draw(enemy); 
+		}
 
+		window.draw(player); //draw는 나중에 호출할수록 우선순위가 높아짐
 		window.display();
 	}
 	return 0;
