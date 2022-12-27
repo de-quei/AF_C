@@ -88,7 +88,7 @@ int main(void) {
 			
 		}
 
-		spent_time = clock();
+		spent_time = clock() - start_time;
 
 		//player 방향키 start
 		if (Keyboard::isKeyPressed(Keyboard::Left)) 
@@ -129,7 +129,7 @@ int main(void) {
 		}
 
 		//점수 적용
-		sprintf(info, "score : %d | time : %dsec", player_score, (spent_time - start_time)/1000);
+		sprintf(info, "score : %d | time : %dsec", player_score, spent_time/1000);
 		text.setString(info);
 
 		window.clear(Color::Black);
