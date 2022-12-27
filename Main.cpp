@@ -13,16 +13,28 @@ int main(void) {
 
 	srand(time(0));
 
+	Font font;
+	font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf");
+
+	Text text;
+	text.setFont(font);
+	text.setCharacterSize(30);
+	text.setFillColor(Color(255, 255, 255));
+	text.setPosition(0, 0);
+	text.setString("score");
+
 	//player
 	RectangleShape player;
 	player.setSize(Vector2f(40, 40));
 	player.setPosition(100, 100);
 	player.setFillColor(Color::Red);
 	int player_speed = 5;
+	int player_score = 0;
 
 	//enemy
 	RectangleShape enemy[5];
 	int enemy_life[5];
+	int enemy_score = 100; //enemy를 잡을 때 얻는 점수
 	//enemy 초기화
 	for (int i = 0; i < 5; i++)
 	{
@@ -91,9 +103,12 @@ int main(void) {
 				{
 					printf("enemy[%d]와 충돌\n", i);
 					enemy_life[i] -= 1;
+					player_score += enemy_score;
 				}
 			}
 		}
+
+		printf("score : %d\n", player_score);
 
 		window.clear(Color::Black);
 
@@ -107,6 +122,7 @@ int main(void) {
 		}
 		
 		window.draw(player); //draw는 나중에 호출할수록 우선순위가 높아짐
+		window.draw(text);
 		window.display();
 	}
 	return 0;
