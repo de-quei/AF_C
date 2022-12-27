@@ -14,12 +14,17 @@ int main(void) {
 
 	srand(time(0));
 
+	long start_time = clock(); //게임 시작 시간
+	long spent_time; //게임 진행 시간
+
+	//폰트 
 	Font font;
 	font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf");
 
+	//텍스트
 	Text text;
 	text.setFont(font);
-	text.setCharacterSize(30);
+	text.setCharacterSize(20);
 	text.setFillColor(Color(255, 255, 255));
 	text.setPosition(0, 0);
 	char info[40];
@@ -83,6 +88,8 @@ int main(void) {
 			
 		}
 
+		spent_time = clock();
+
 		//player 방향키 start
 		if (Keyboard::isKeyPressed(Keyboard::Left)) 
 		{
@@ -122,7 +129,7 @@ int main(void) {
 		}
 
 		//점수 적용
-		sprintf(info, "score : %d\n", player_score);
+		sprintf(info, "score : %d | time : %dsec", player_score, (spent_time - start_time)/1000);
 		text.setString(info);
 
 		window.clear(Color::Black);
