@@ -12,6 +12,15 @@ struct Player {
 	int score;
 
 };
+struct Enemy {
+	RectangleShape sprite;
+	int speed;
+	int score;
+	int life;
+	SoundBuffer explosion_buffer;
+	Sound explosion_sound;
+
+};
 
 int main(void) {
 	
@@ -54,23 +63,22 @@ int main(void) {
 
 	//enemy
 	const int ENEMY_NUM = 10;
-	RectangleShape enemy[ENEMY_NUM];
-	int enemy_life[ENEMY_NUM];
-	int enemy_speed[ENEMY_NUM];
-	int enemy_score = 100; //enemy를 잡을 때 얻는 점수
-	SoundBuffer enemy_explosion_buffer;
-	enemy_explosion_buffer.loadFromFile("./resources/rumble.flac");
-	Sound enemy_explosion_sound;
-	enemy_explosion_sound.setBuffer(enemy_explosion_buffer);
+
+	struct Enemy enemy[ENEMY_NUM];
 
 	//enemy 초기화
 	for (int i = 0; i < ENEMY_NUM; i++)
 	{
-		enemy[i].setSize(Vector2f(70, 70));
-		enemy[i].setFillColor(Color::Yellow);
-		enemy_life[i] = 1;
-		enemy[i].setPosition(rand()%300+300, rand() % 480);
-		enemy_speed[i] = -(rand() % 10 + 1);
+		//TODO : 굉장히 비효율적인 코드이므로 나중에 refactoring
+		enemy[i].explosion_buffer.loadFromFile("./resources/rumble.flac");
+		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
+		enemy[i].score = 100;
+
+		enemy[i].sprite.setSize(Vector2f(70, 70));
+		enemy[i].sprite.setFillColor(Color::Yellow);
+		enemy[i].sprite.setPosition(rand()%300+300, rand() % 480);
+		enemy[i].life = 1;
+		enemy[i].speed = -(rand() % 10 + 1);
 	}
 
 	// 윈도우가 열려 있을 때 까지 반복
@@ -92,10 +100,10 @@ int main(void) {
 				{
 					for (int i = 0; i < ENEMY_NUM; i++)
 					{
-						enemy[i].setSize(Vector2f(70, 70));
-						enemy[i].setFillColor(Color::Yellow);
-						enemy_life[i] = 1;
-						enemy[i].setPosition(rand() % 300 + 300, rand() % 480);
+						enemy[i].sprite.setSize(Vector2f(70, 70));
+						enemy[i].sprite.setFillColor(Color::Yellow);
+						enemy[i].life = 1;
+						enemy[i].sprite.setPosition(rand() % 300 + 300, rand() % 480);
 					}
 				}
 				break;
@@ -128,22 +136,22 @@ int main(void) {
 		
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
-			if (enemy_life[i] > 0)
+			if (enemy[i].life > 0)
 			{
 				//enemy와의 충돌
-				if (player.sprite.getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds()))
 				{
 					printf("enemy[%d]와 충돌\n", i+1);
-					enemy_life[i] -= 1;
-					player.score += enemy_score;
+					enemy[i].life -= 1;
+					player.score += enemy[i].score;
 
 					// TODO : 코드 refactoring 필요
-					if (enemy_life[i] == 0)
+					if (enemy[i].life == 0)
 					{
-						enemy_explosion_sound.play();
+						enemy[i].explosion_sound.play();
 					}
 				}
-				enemy[i].move(enemy_speed[i], 0);
+				enemy[i].sprite.move(enemy[i].speed, 0);
 			}
 		}
 
@@ -154,16 +162,16 @@ int main(void) {
 		window.clear(Color::Black);
 		window.draw(bg_sprite);
 
-		//적 나타내기
+		//draw는 나중에 호출할수록 우선순위가 높아짐
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
-			if (enemy_life[i] > 0)
+			if (enemy[i].life > 0)
 			{
-				window.draw(enemy[i]);
+				window.draw(enemy[i].sprite);
 			}
 		}
 		
-		window.draw(player.sprite); //draw는 나중에 호출할수록 우선순위가 높아짐
+		window.draw(player.sprite);
 		window.draw(text);
 		window.display();
 	}
