@@ -21,6 +21,7 @@ int main(void) {
 	text.setCharacterSize(30);
 	text.setFillColor(Color(255, 255, 255));
 	text.setPosition(0, 0);
+	char info[40];
 	text.setString("score");
 
 	//player
@@ -108,7 +109,8 @@ int main(void) {
 			}
 		}
 
-		printf("score : %d\n", player_score);
+		sprintf(info, "score : %d\n", player_score);
+		text.setString(info);
 
 		window.clear(Color::Black);
 
