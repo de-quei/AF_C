@@ -10,6 +10,7 @@ struct Player {
 	RectangleShape sprite;
 	int speed;
 	int score;
+	int life;
 
 };
 struct Enemy {
@@ -25,7 +26,7 @@ struct Enemy {
 int main(void) {
 	
 	// 윈도우 창 생성
-	RenderWindow window(VideoMode(640, 480), "AfterSchool"); 
+	RenderWindow window(VideoMode(640, 480), "Let's win the Jesus!"); 
 	window.setFramerateLimit(60);
 
 	srand(time(0));
@@ -60,6 +61,7 @@ int main(void) {
 	player.sprite.setFillColor(Color::Red);
 	player.speed = 7;
 	player.score = 0;
+	player.life = 5;
 
 	//enemy
 	const int ENEMY_NUM = 10;
@@ -78,7 +80,7 @@ int main(void) {
 		enemy[i].sprite.setFillColor(Color::Yellow);
 		enemy[i].sprite.setPosition(rand()%300+300, rand() % 480);
 		enemy[i].life = 1;
-		enemy[i].speed = -(rand() % 10 + 1);
+		enemy[i].speed = -(rand() % 5 + 1);
 	}
 
 	// 윈도우가 열려 있을 때 까지 반복
@@ -151,12 +153,18 @@ int main(void) {
 						enemy[i].explosion_sound.play();
 					}
 				}
+				//enemy가 왼쪽에 진입하려는 순간
+				else if (enemy[i].sprite.getPosition().x < 0)
+				{
+					player.life -= 1;
+					enemy[i].life = 0;
+				}
 				enemy[i].sprite.move(enemy[i].speed, 0);
 			}
 		}
 
 		//점수 적용
-		sprintf(info, "score : %d | time : %dsec", player.score, spent_time/1000);
+		sprintf(info, "Life : %d | Score : %d | Time : %dsec", player.life, player.score, spent_time/1000);
 		text.setString(info);
 
 		window.clear(Color::Black);
