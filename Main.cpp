@@ -42,12 +42,14 @@ int main(void) {
 	player.setSize(Vector2f(40, 40));
 	player.setPosition(100, 100);
 	player.setFillColor(Color::Red);
-	int player_speed = 5;
+	int player_speed = 7;
 	int player_score = 0;
 
 	//enemy
-	RectangleShape enemy[5];
-	int enemy_life[5];
+	const int ENEMY_NUM = 10;
+	RectangleShape enemy[ENEMY_NUM];
+	int enemy_life[ENEMY_NUM];
+	int enemy_speed[ENEMY_NUM];
 	int enemy_score = 100; //enemy를 잡을 때 얻는 점수
 	SoundBuffer enemy_explosion_buffer;
 	enemy_explosion_buffer.loadFromFile("./resources/rumble.flac");
@@ -55,12 +57,13 @@ int main(void) {
 	enemy_explosion_sound.setBuffer(enemy_explosion_buffer);
 
 	//enemy 초기화
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < ENEMY_NUM; i++)
 	{
 		enemy[i].setSize(Vector2f(70, 70));
 		enemy[i].setFillColor(Color::Yellow);
 		enemy_life[i] = 1;
 		enemy[i].setPosition(rand()%300+300, rand() % 480);
+		enemy_speed[i] = -(rand() % 10 + 1);
 	}
 
 	// 윈도우가 열려 있을 때 까지 반복
@@ -80,7 +83,7 @@ int main(void) {
 				//space 누르면 모든  enemy 재출현
 				if (event.key.code == Keyboard::Space)
 				{
-					for (int i = 0; i < 5; i++)
+					for (int i = 0; i < ENEMY_NUM; i++)
 					{
 						enemy[i].setSize(Vector2f(70, 70));
 						enemy[i].setFillColor(Color::Yellow);
@@ -115,14 +118,15 @@ int main(void) {
 			player.move(0, player_speed);
 		} //방향키 end
 
-		//enemy와의 충돌
-		for (int i = 0; i < 5; i++)
+		
+		for (int i = 0; i < ENEMY_NUM; i++)
 		{
 			if (enemy_life[i] > 0)
 			{
+				//enemy와의 충돌
 				if (player.getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 				{
-					printf("enemy[%d]와 충돌\n", i);
+					printf("enemy[%d]와 충돌\n", i+1);
 					enemy_life[i] -= 1;
 					player_score += enemy_score;
 
@@ -132,6 +136,7 @@ int main(void) {
 						enemy_explosion_sound.play();
 					}
 				}
+				enemy[i].move(enemy_speed[i], 0);
 			}
 		}
 
@@ -143,7 +148,7 @@ int main(void) {
 		window.draw(bg_sprite);
 
 		//적 나타내기
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ENEMY_NUM; i++)
 		{
 			if (enemy_life[i] > 0)
 			{
