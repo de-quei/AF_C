@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include <time.h>
+#include <SFML/Audio.hpp>
 
 using namespace sf;
 
@@ -36,6 +37,11 @@ int main(void) {
 	RectangleShape enemy[5];
 	int enemy_life[5];
 	int enemy_score = 100; //enemy를 잡을 때 얻는 점수
+	SoundBuffer enemy_explosion_buffer;
+	enemy_explosion_buffer.loadFromFile("./resources/rumble.flac");
+	Sound enemy_explosion_sound;
+	enemy_explosion_sound.setBuffer(enemy_explosion_buffer);
+
 	//enemy 초기화
 	for (int i = 0; i < 5; i++)
 	{
@@ -105,10 +111,17 @@ int main(void) {
 					printf("enemy[%d]와 충돌\n", i);
 					enemy_life[i] -= 1;
 					player_score += enemy_score;
+
+					// TODO : 코드 refactoring 필요
+					if (enemy_life[i] == 0)
+					{
+						enemy_explosion_sound.play();
+					}
 				}
 			}
 		}
 
+		//점수 적용
 		sprintf(info, "score : %d\n", player_score);
 		text.setString(info);
 
