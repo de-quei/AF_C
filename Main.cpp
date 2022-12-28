@@ -41,6 +41,14 @@ int main(void) {
 	long spent_time;			//게임 진행 시간
 	int is_gameOver = 0;        //게임 오버
 
+	//BGM
+	SoundBuffer BGM_buffer;
+	BGM_buffer.loadFromFile("./resources/TownTheme.ogg");
+	Sound BGM_sound;
+	BGM_sound.setBuffer(BGM_buffer);
+	BGM_sound.setLoop(1);   // BGM 무한반복
+	BGM_sound.play();
+
 	//폰트 
 	Font font;
 	font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf");
@@ -84,7 +92,7 @@ int main(void) {
 	for (int i = 0; i < ENEMY_NUM; i++)
 	{
 		//TODO : 굉장히 비효율적인 코드이므로 나중에 refactoring
-		enemy[i].explosion_buffer.loadFromFile("./resources/rumble.flac");
+		enemy[i].explosion_buffer.loadFromFile("./resources/bubbles-single2.wav");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
 		enemy[i].respawn_time = 8;
@@ -132,19 +140,19 @@ int main(void) {
 		spent_time = clock() - start_time;
 
 		//player 방향키 start
-		if (Keyboard::isKeyPressed(Keyboard::A)) 
+		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
 		{
 			player.sprite.move(-player.speed, 0);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::D))
+		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
 		{
 			player.sprite.move(player.speed, 0);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::W))
+		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
 		{
 			player.sprite.move(0, -player.speed);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::S))
+		if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down))
 		{
 			player.sprite.move(0, player.speed);
 		} //방향키 end
