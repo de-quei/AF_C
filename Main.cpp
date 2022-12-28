@@ -18,6 +18,7 @@ struct Enemy {
 	int speed;
 	int score;
 	int life;
+	int respawn_time;
 	SoundBuffer explosion_buffer;
 	Sound explosion_sound;
 
@@ -25,7 +26,7 @@ struct Enemy {
 
 // 전역변수
 const int ENEMY_NUM = 10;                  // enemy 최대 개수
-const int W_WIDTH = 640, W_HEIGHT = 480;   // 창의 크기
+const int W_WIDTH = 800, W_HEIGHT = 480;   // 창의 크기
 const int GO_WIDTH = 203, GO_HEIGHT = 106; // 게임오버 이미지 크기
 
 int main(void) {
@@ -86,12 +87,13 @@ int main(void) {
 		enemy[i].explosion_buffer.loadFromFile("./resources/rumble.flac");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
+		enemy[i].respawn_time = 8;
 
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setFillColor(Color::Yellow);
-		enemy[i].sprite.setPosition(rand()%300+300, rand() % 480);
+		enemy[i].sprite.setPosition(rand()% 300 + W_WIDTH*0.9, rand() % 380);
 		enemy[i].life = 1;
-		enemy[i].speed = -(rand() % 5 + 1);
+		enemy[i].speed = -(rand() % 4 + 1);
 	}
 
 	// 윈도우가 열려 있을 때 까지 반복
@@ -116,7 +118,8 @@ int main(void) {
 						enemy[i].sprite.setSize(Vector2f(70, 70));
 						enemy[i].sprite.setFillColor(Color::Yellow);
 						enemy[i].life = 1;
-						enemy[i].sprite.setPosition(rand() % 300 + 300, rand() % 480);
+						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 380);
+						enemy[i].speed = -(rand() % 4 + 1);
 					}
 				}
 				break;
@@ -129,19 +132,19 @@ int main(void) {
 		spent_time = clock() - start_time;
 
 		//player 방향키 start
-		if (Keyboard::isKeyPressed(Keyboard::Left)) 
+		if (Keyboard::isKeyPressed(Keyboard::A)) 
 		{
 			player.sprite.move(-player.speed, 0);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Right))
+		if (Keyboard::isKeyPressed(Keyboard::D))
 		{
 			player.sprite.move(player.speed, 0);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Up))
+		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
 			player.sprite.move(0, -player.speed);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Down))
+		if (Keyboard::isKeyPressed(Keyboard::S))
 		{
 			player.sprite.move(0, player.speed);
 		} //방향키 end
@@ -149,12 +152,22 @@ int main(void) {
 		
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
+			// 10초마다 enemy가 리스폰
+			if (spent_time % (1000* enemy[i].respawn_time) < 1000/60 + 1)
+			{
+				enemy[i].sprite.setSize(Vector2f(70, 70));
+				enemy[i].sprite.setFillColor(Color::Yellow);
+				enemy[i].life = 1;
+				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 380);
+				// 10초마다 enemy_spped += 1
+				enemy[i].speed = -(rand() % 1 + 1 + (spent_time / 1000 / enemy[i].respawn_time));
+			}
 			if (enemy[i].life > 0)
 			{
 				//enemy와의 충돌
 				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds()))
 				{
-					printf("enemy[%d]와 충돌\n", i+1);
+					printf("enemy[%d]와 충돌\n", i + 1);
 					enemy[i].life -= 1;
 					player.score += enemy[i].score;
 
@@ -201,6 +214,7 @@ int main(void) {
 		if (is_gameOver)
 		{
 			window.draw(gameover_sprite);
+			// TODO : 게임이 멈추는 것을 구현할 것
 		}
 
 		window.display();
