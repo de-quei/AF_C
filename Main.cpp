@@ -23,10 +23,15 @@ struct Enemy {
 
 };
 
+// 전역변수
+const int ENEMY_NUM = 10;                  // enemy 최대 개수
+const int W_WIDTH = 640, W_HEIGHT = 480;   // 창의 크기
+const int GO_WIDTH = 203, GO_HEIGHT = 106; // 게임오버 이미지 크기
+
 int main(void) {
 	
 	// 윈도우 창 생성
-	RenderWindow window(VideoMode(640, 480), "Let's win the Jesus!"); 
+	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "Let's win with the Jesus!");
 	window.setFramerateLimit(60);
 
 	srand(time(0));
@@ -60,7 +65,7 @@ int main(void) {
 	gameover_texture.loadFromFile("./resources/gameover.png");
 	Sprite gameover_sprite;
 	gameover_sprite.setTexture(gameover_texture);
-	gameover_sprite.setPosition(100, 150);
+	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2); // 정가운데 위치 공식
 
 	//player
 	struct Player player;
@@ -72,8 +77,6 @@ int main(void) {
 	player.life = 5;
 
 	//enemy
-	const int ENEMY_NUM = 10;
-
 	struct Enemy enemy[ENEMY_NUM];
 
 	//enemy 초기화
