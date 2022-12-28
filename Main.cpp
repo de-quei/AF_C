@@ -11,7 +11,7 @@ struct Player {
 	int speed;
 	int score;
 	int life;
-
+	float x, y;
 };
 struct Enemy {
 	RectangleShape sprite;
@@ -21,9 +21,13 @@ struct Enemy {
 	int respawn_time;
 	SoundBuffer explosion_buffer;
 	Sound explosion_sound;
-
 };
-
+// 총알
+struct Bullet {
+	RectangleShape sprite;
+	int speed;
+	int is_fired; // 발사 여부
+};
 // 전역변수
 const int ENEMY_NUM = 10;                  // enemy 최대 개수
 const int W_WIDTH = 800, W_HEIGHT = 480;   // 창의 크기
@@ -80,10 +84,19 @@ int main(void) {
 	struct Player player;
 	player.sprite.setSize(Vector2f(40, 40));
 	player.sprite.setPosition(100, 100);
+	player.x = player.sprite.getPosition().x;
+	player.y = player.sprite.getPosition().y;
 	player.sprite.setFillColor(Color::Red);
 	player.speed = 7;
 	player.score = 0;
 	player.life = 5;
+
+	// 총알
+	struct Bullet bullet;
+	bullet.sprite.setSize(Vector2f(10, 10));
+	bullet.sprite.setPosition(player.x + 50, player.y + 15);
+	bullet.speed = 20;
+	bullet.is_fired = 0;
 
 	//enemy
 	struct Enemy enemy[ENEMY_NUM];
@@ -218,6 +231,7 @@ int main(void) {
 		
 		window.draw(player.sprite);
 		window.draw(text);
+		window.draw(bullet.sprite);
 
 		if (is_gameOver)
 		{
