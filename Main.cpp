@@ -28,6 +28,12 @@ struct Bullet {
 	int speed;
 	int is_fired; // 발사 여부
 };
+struct Textures {
+	Texture bg;       // 배경 이미지
+	Texture gameover; // 게임오버 이미지
+	Texture player;   // 플레이어 이미지
+	Texture enemy;
+};
 
 // obj1과 obj2의 충돌 여부 / 충돌 시 return 1 / 충돌x 시 return 0.
 int is_collide(RectangleShape obj1, RectangleShape obj2)
@@ -42,6 +48,11 @@ const int W_WIDTH = 800, W_HEIGHT = 480;   // 창의 크기
 const int GO_WIDTH = 203, GO_HEIGHT = 106; // 게임오버 이미지 크기
 
 int main(void) {
+	struct Textures t;
+	t.bg.loadFromFile("./resources/background.jpg"); 
+	t.gameover.loadFromFile("./resources/gameover.png");
+	t.player.loadFromFile("./resources/player.png");
+	t.enemy.loadFromFile("./resources/enemy.png");
 	
 	// 윈도우 창 생성
 	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "Let's win with the Jesus!");
@@ -75,26 +86,22 @@ int main(void) {
 	text.setString("score");
 
 	//배경
-	Texture bg_texture;
-	bg_texture.loadFromFile("./resources/background.jpg");
 	Sprite bg_sprite;
-	bg_sprite.setTexture(bg_texture);
+	bg_sprite.setTexture(t.bg);
 	bg_sprite.setPosition(0, 0);
 
 	//게임오버
-	Texture gameover_texture;
-	gameover_texture.loadFromFile("./resources/gameover.png");
 	Sprite gameover_sprite;
-	gameover_sprite.setTexture(gameover_texture);
+	gameover_sprite.setTexture(t.gameover);
 	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2); // 정가운데 위치 공식
 
 	//player
 	struct Player player;
-	player.sprite.setSize(Vector2f(40, 40));
+	player.sprite.setSize(Vector2f(90, 90));
+	player.sprite.setTexture(&t.player);
 	player.sprite.setPosition(100, 100);
 	player.x = player.sprite.getPosition().x;
 	player.y = player.sprite.getPosition().y;
-	player.sprite.setFillColor(Color::Red);
 	player.speed = 7;
 	player.score = 0;
 	player.life = 5;
@@ -117,9 +124,9 @@ int main(void) {
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
 		enemy[i].respawn_time = 10;
+		enemy[i].sprite.setTexture(&t.enemy);
 
-		enemy[i].sprite.setSize(Vector2f(70, 70));
-		enemy[i].sprite.setFillColor(Color::Yellow);
+		enemy[i].sprite.setSize(Vector2f(150, 150));
 		enemy[i].sprite.setPosition(rand()% 300 + W_WIDTH*0.9, rand() % 380);
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 4 + 1);
@@ -197,10 +204,10 @@ int main(void) {
 			// 8초마다 enemy가 리스폰
 			if (spent_time % (1000* enemy[i].respawn_time) < 1000/60 + 1)
 			{
-				enemy[i].sprite.setSize(Vector2f(70, 70));
-				enemy[i].sprite.setFillColor(Color::Yellow);
+				enemy[i].sprite.setSize(Vector2f(150, 150));
 				enemy[i].life = 1;
 				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 380);
+				enemy[i].sprite.setTexture(&t.enemy);
 				// 10초마다 enemy_spped += 1
 				enemy[i].speed = -(rand() % 1 + 1 + (spent_time / 1000 / enemy[i].respawn_time));
 			}
