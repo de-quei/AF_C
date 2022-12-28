@@ -108,7 +108,7 @@ int main(void) {
 		enemy[i].explosion_buffer.loadFromFile("./resources/bubbles-single2.wav");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
-		enemy[i].respawn_time = 8;
+		enemy[i].respawn_time = 10;
 
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setFillColor(Color::Yellow);
@@ -131,18 +131,19 @@ int main(void) {
 			//키보드를 눌렀을 때 (누른 순간만 감지)
 			case Event::KeyPressed:
 			{
-				//space 누르면 모든  enemy 재출현
-				if (event.key.code == Keyboard::Space)
-				{
-					for (int i = 0; i < ENEMY_NUM; i++)
-					{
-						enemy[i].sprite.setSize(Vector2f(70, 70));
-						enemy[i].sprite.setFillColor(Color::Yellow);
-						enemy[i].life = 1;
-						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 380);
-						enemy[i].speed = -(rand() % 4 + 1);
-					}
-				}
+				////space 누르면 모든  enemy 재출현
+				//if (event.key.code == Keyboard::Space)
+				//{
+				//	for (int i = 0; i < ENEMY_NUM; i++)
+				//	{
+				//		enemy[i].sprite.setSize(Vector2f(70, 70));
+				//		enemy[i].sprite.setFillColor(Color::Yellow);
+				//		enemy[i].life = 1;
+				//		enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 380);
+				//		enemy[i].speed = -(rand() % 4 + 1);
+
+				//	}
+				//}
 				break;
 			}
 
@@ -151,6 +152,8 @@ int main(void) {
 		}
 
 		spent_time = clock() - start_time;
+		player.x = player.sprite.getPosition().x;
+		player.y = player.sprite.getPosition().y;
 
 		//player 방향키 start
 		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
@@ -168,12 +171,22 @@ int main(void) {
 		if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down))
 		{
 			player.sprite.move(0, player.speed);
-		} //방향키 end
+		} 
+		//총알 발사
+		if (Keyboard::isKeyPressed(Keyboard::Space))
+		{
+			//총알이 발사되어있지 않다면
+			if (!bullet.is_fired)
+			{
+				bullet.sprite.setPosition(player.x + 50, player.y + 15);
+				bullet.is_fired = 1;
+			}
+		}//방향키 end
 
 		
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
-			// 10초마다 enemy가 리스폰
+			// 8초마다 enemy가 리스폰
 			if (spent_time % (1000* enemy[i].respawn_time) < 1000/60 + 1)
 			{
 				enemy[i].sprite.setSize(Vector2f(70, 70));
@@ -183,6 +196,7 @@ int main(void) {
 				// 10초마다 enemy_spped += 1
 				enemy[i].speed = -(rand() % 1 + 1 + (spent_time / 1000 / enemy[i].respawn_time));
 			}
+
 			if (enemy[i].life > 0)
 			{
 				//enemy와의 충돌
@@ -208,6 +222,12 @@ int main(void) {
 			}
 		}
 
+		// TODO : 총알이 한 번만 발사되는 버그 Modify
+		if (bullet.is_fired)
+		{
+			bullet.sprite.move(bullet.speed, 0);
+		}
+
 		if (player.life <= 0)
 		{
 			is_gameOver = 1;
@@ -231,7 +251,10 @@ int main(void) {
 		
 		window.draw(player.sprite);
 		window.draw(text);
-		window.draw(bullet.sprite);
+		if (bullet.is_fired)
+		{
+			window.draw(bullet.sprite);
+		}
 
 		if (is_gameOver)
 		{
