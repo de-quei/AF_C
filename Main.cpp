@@ -28,6 +28,14 @@ struct Bullet {
 	int speed;
 	int is_fired; // 발사 여부
 };
+
+// obj1과 obj2의 충돌 여부 / 충돌 시 return 1 / 충돌x 시 return 0.
+int is_collide(RectangleShape obj1, RectangleShape obj2)
+{
+	return obj1.getGlobalBounds().intersects(obj2.getGlobalBounds());
+
+}
+
 // 전역변수
 const int ENEMY_NUM = 10;                  // enemy 최대 개수
 const int W_WIDTH = 800, W_HEIGHT = 480;   // 창의 크기
@@ -199,10 +207,9 @@ int main(void) {
 
 			if (enemy[i].life > 0)
 			{
-				//enemy와의 충돌
-				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds()))
+				//player - enemy와의 충돌
+				if (is_collide(player.sprite, enemy[i].sprite))
 				{
-					printf("enemy[%d]와 충돌\n", i + 1);
 					enemy[i].life -= 1;
 					player.score += enemy[i].score;
 
@@ -219,6 +226,20 @@ int main(void) {
 					enemy[i].life = 0;
 				}
 				enemy[i].sprite.move(enemy[i].speed, 0);
+
+				//bullet - enemy와의 충돌
+				if (is_collide(bullet.sprite, enemy[i].sprite))
+				{
+					enemy[i].life -= 1;
+					player.score += enemy[i].score;
+
+					// TODO : 코드 refactoring 필요
+					if (enemy[i].life == 0)
+					{
+						enemy[i].explosion_sound.play();
+					}
+					bullet.is_fired = 0;
+				}
 			}
 		}
 
@@ -226,6 +247,10 @@ int main(void) {
 		if (bullet.is_fired)
 		{
 			bullet.sprite.move(bullet.speed, 0);
+			if (bullet.sprite.getPosition().x > W_WIDTH)
+			{
+				bullet.is_fired = 0;
+			}
 		}
 
 		if (player.life <= 0)
