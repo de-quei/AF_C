@@ -138,15 +138,18 @@ int main(void) {
 	// 윈도우가 열려 있을 때 까지 반복
 	while (window.isOpen()) 
 	{ 
+		spent_time = clock() - start_time;
+		player.x = player.sprite.getPosition().x;
+		player.y = player.sprite.getPosition().y;
 		Event event;
-		while (window.pollEvent(event)) 
+		while (window.pollEvent(event))
 		{
 			switch (event.type)
 			{
 			case Event::Closed:// 종료(x) 버튼을 누르면
 				window.close();// 윈도우를 닫는다
 				break;
-			//키보드를 눌렀을 때 (누른 순간만 감지)
+				//키보드를 눌렀을 때 (누른 순간만 감지)
 			case Event::KeyPressed:
 			{
 				////space 누르면 모든  enemy 재출현
@@ -166,13 +169,10 @@ int main(void) {
 			}
 
 			}
-			
+
 		}
 
-		spent_time = clock() - start_time;
-		player.x = player.sprite.getPosition().x;
-		player.y = player.sprite.getPosition().y;
-
+		//PLAYER UPDATE
 		//player 방향키 start
 		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
 		{
@@ -190,7 +190,26 @@ int main(void) {
 		{
 			player.sprite.move(0, player.speed);
 		} 
-		//총알 발사
+
+		//player 이동범위 제한
+		if (player.x < 0)
+		{
+			player.sprite.setPosition(0, player.y);
+		}
+		else if (player.x > W_WIDTH - 80)
+		{
+			player.sprite.setPosition(W_WIDTH - 80, player.y);
+		}
+		if (player.y < 0)
+		{
+			player.sprite.setPosition(player.x, 0);
+		}
+		else if (player.y > W_HEIGHT - 90)
+		{
+			player.sprite.setPosition(player.x, W_HEIGHT - 90);
+		}
+
+		//BULLET UPDATE
 		if (Keyboard::isKeyPressed(Keyboard::Space))
 		{
 			//총알이 발사되어있지 않다면
@@ -199,9 +218,18 @@ int main(void) {
 				bullet.sprite.setPosition(player.x + 50, player.y + 15);
 				bullet.is_fired = 1;
 			}
-		}//방향키 end
+		}
+		// TODO : 총알이 한 번만 발사되는 버그 Modify
+		if (bullet.is_fired)
+		{
+			bullet.sprite.move(bullet.speed, 0);
+			if (bullet.sprite.getPosition().x > W_WIDTH)
+			{
+				bullet.is_fired = 0;
+			}
+		}
 
-		
+		//ENEMY UPDATE
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
 			// 8초마다 enemy가 리스폰
@@ -251,16 +279,6 @@ int main(void) {
 					}
 					bullet.is_fired = 0;
 				}
-			}
-		}
-
-		// TODO : 총알이 한 번만 발사되는 버그 Modify
-		if (bullet.is_fired)
-		{
-			bullet.sprite.move(bullet.speed, 0);
-			if (bullet.sprite.getPosition().x > W_WIDTH)
-			{
-				bullet.is_fired = 0;
 			}
 		}
 
