@@ -33,6 +33,7 @@ struct Textures {
 	Texture enemy;
 	Texture gameover; // 게임오버 이미지
 	Texture player;   // 플레이어 이미지
+	Texture bullet;
 };
 
 // obj1과 obj2의 충돌 여부 / 충돌 시 return 1 / 충돌x 시 return 0.
@@ -53,6 +54,7 @@ int main(void) {
 	t.enemy.loadFromFile("./resources/enemy.png");
 	t.gameover.loadFromFile("./resources/gameover.png");
 	t.player.loadFromFile("./resources/player.png");
+	t.bullet.loadFromFile("./resources/ring.png");
 	
 	// 윈도우 창 생성
 	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "Let's win with the Jesus!");
@@ -108,10 +110,11 @@ int main(void) {
 
 	// 총알
 	struct Bullet bullet;
-	bullet.sprite.setSize(Vector2f(10, 10));
+	bullet.sprite.setSize(Vector2f(40, 40));
 	bullet.sprite.setPosition(player.x + 50, player.y + 15);
 	bullet.speed = 20;
 	bullet.is_fired = 0;
+	bullet.sprite.setTexture(&t.bullet);
 
 	//enemy
 	struct Enemy enemy[ENEMY_NUM];
