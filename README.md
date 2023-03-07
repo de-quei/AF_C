@@ -1,5 +1,6 @@
 # AF_C
 2022년 겨울방학 C/C++ 미니게임 프로젝트
+vcpkg 사용하였습니다!
 
 리소스 출처
  - Sound Effects : https://opengameart.org/content/bubble-sound-effects
